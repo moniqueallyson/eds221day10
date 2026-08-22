@@ -2,11 +2,21 @@
 title: "Moving Average"
 author: 
     name: "Monique Hernandez"
-    affiliation: University of California, Santa Barbara
+    email: mahernandez@ucsb.edu
+    affiliation: 
+    - University of California, Santa Barbara
+    - Masters of Environmental Data Science, 2027
+    - B.S. in Environmental Studies, 2025
 date: "Augustt 21, 2026"
+toc: true
 format:
   html:
-    toc: true
+    theme: "pulse"
+    other-links:
+      - text: Course Website EDS 221 
+        href: https://eds-221-programming-m26.github.io/course-materials/day1.html
+      - text: Monique's website
+        href: moniqueallyson.github.io
 execute:
   message: false
   warning: false
