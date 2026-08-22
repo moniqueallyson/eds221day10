@@ -1,50 +1,87 @@
 ---
-
-
-
+title: "Moving Average"
+author: 
+    name: "Monique Hernandez"
+    affiliation: University of California, Santa Barbara
+date: "Augustt 21, 2026"
+format:
+  html:
+    toc: true
+execute:
+  message: false
+  warning: false
 ---
 
+# Quebrada Sonadora Fall from 1984
 
+### Read in data
+```{r, message=FALSE}
 library(tidyverse)
 library(ggplot2)
 
 qs_data <- read_csv("data/QuebradaSonadora_Fall1984.csv")
+```
 
+### Create the tibble
+``` {r}
 qs_smoothed <- tibble(
-  window_start = seq(ymd("1984-09-04"), ymd("1984-11-28"), by = "9 days"),
-  k_mgl = NA,
-  mg_mgl = NA
+  # tibble called qs_smoothed
+  window_start = seq(
+    # window start: 10 rows, one row per window
+    ymd("1984-09-04"),
+    ymd("1984-11-28"), # from first sample date to last sample date
+    by = "9 days"
+  ), # by 9 days
+  k_mgl = NA, # blank (NA) for k_mgl
+  mg_mgl = NA # and mg_mgl columns to fill in later
 )
+print(qs_smoothed)
+```
 
-dates <- seq(ymd("1984-09-04"), ymd("1984-11-28"), by = "9 days")
+### Loop by indexing
 
+```{r}
 for (i in 1:nrow(qs_smoothed)) {
-  w1 <- qs_smoothed$window_start[i]
-  w2 <- qs_smoothed$window_start[i] + 9
-  k <- qs_data$k_mgl[qs_data$sample_date >= w1 & qs_data$sample_date < w2]
-  mean_k <- mean(k, na.rm = TRUE)
-  qs_smoothed$k_mgl[i] <- mean_k
+  # iterate through qs_smoothed by number of rows
+  w1 <- qs_smoothed$window_start[i] # start at the first window
+  w2 <- qs_smoothed$window_start[i] + 9 # then iterate by 9
+  k <- qs_data$k_mgl[qs_data$sample_date >= w1 & qs_data$sample_date < w2] # in-between the start and end date
+  mean_k <- mean(k, na.rm = TRUE) # find the mean for k and remove NA
+  qs_smoothed$k_mgl[i] <- mean_k # plug in the value for k into qs_smoothed from the loop
   mg <- qs_data$mg_mgl[qs_data$sample_date >= w1 & qs_data$sample_date < w2]
-  mean_mg <- mean(mg, na.rm = TRUE)
-  qs_smoothed$mg_mgl[i] <- mean_mg
+  mean_mg <- mean(mg, na.rm = TRUE) # find the mean for mg and remove NA
+  qs_smoothed$mg_mgl[i] <- mean_mg # plug in the value for mg into qs_smoothed from the loop
 }
+```
 
-qs_long <- qs_smoothed |>
+### Reshape using pivot long
+``` {r}
+qs_long <- qs_smoothed |> # create pivot long using qs_smoothed
   pivot_longer(
-    cols = !window_start,
-    names_to = "ion",
-    values_to = "concentration"
+    # pivot_longer funtion
+    cols = !window_start, # columns are window start
+    names_to = "ion", # names are ions
+    values_to = "concentration" # these are the values
   )
+```
 
+### Plot it
+```{r}
 ggplot(
-  data = qs_long,
-  mapping = aes(x = window_start, y = concentration, color = ion)
+  # finish by plotting both smoothed time series
+  data = qs_long, # data from qs_long
+  mapping = aes(
+    x = window_start, # x-axis from window start (dates)
+    y = concentration, # y-axis of chemical concentrations (_mgl)
+    color = ion
+  ) # color-coded by ion (two colors: potasium and magnesium)
 ) +
   geom_line() +
   geom_point() +
-  theme_bw() +
+  theme_classic() +
   theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
+    panel.grid.major = element_blank(), # remove major grid lines
+    panel.grid.minor = element_blank() # remove minor grid lines
   ) +
-  scale_x_datetime(date_labels = "%Y-%m-%d", date_breaks = "2 week")
+  scale_x_datetime(date_labels = "%Y-%m-%d", date_breaks = "2 week") # scale of date by two week breaks
+```
