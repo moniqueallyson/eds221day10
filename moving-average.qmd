@@ -69,10 +69,11 @@ for (i in 1:nrow(qs_smoothed)) {
 qs_long <- qs_smoothed |> # create pivot long using qs_smoothed
   pivot_longer(
     # pivot_longer funtion
-    cols = !window_start, # columns are window start
+    cols = !window_start, # columns are not window start
     names_to = "ion", # names are ions
     values_to = "concentration" # these are the values
   )
+print(qs_long)
 ```
 
 ### Plot it
