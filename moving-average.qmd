@@ -62,6 +62,7 @@ for (i in 1:nrow(qs_smoothed)) {
   mean_mg <- mean(mg, na.rm = TRUE) # find the mean for mg and remove NA
   qs_smoothed$mg_mgl[i] <- mean_mg # plug in the value for mg into qs_smoothed from the loop
 }
+print(qs_smoothed)
 ```
 
 ### Reshape using pivot long
